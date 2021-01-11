@@ -1,0 +1,1 @@
+insert into table item (name) values ('first'), ('second');
