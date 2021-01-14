@@ -1,0 +1,32 @@
+language: java
+
+jdk:
+  - openjdk14
+
+services:
+  - postgresql
+
+before_install:
+  - psql -c 'create database tracker;' -U postgres
+
+cache:
+  directories:
+    - $HOME/.m2
+
+sudo: false
+
+env:
+  global:
+    - CODECOV_TOKEN="26e98125-5c61-463f-91ff-9d220d14dfea"
+
+# после выполнения сборки запустить скрипт, который будет собирать статистику по JaCoCo
+# Здесь используется сторонни сервис https://codecov.io/
+after_success:
+  - bash <(curl -s https://codecov.io/bash)
+
+notifications:
+  email:
+    recipients:
+      - leb34359@mail.ru
+    on_success: never # default: change
+    on_failure: always # default: always
