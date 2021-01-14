@@ -11,10 +11,16 @@ public class SqlTracker implements Store {
     private Connection cn;
     private final String tableName = "item";
 
+    public SqlTracker(Connection connection) {
+        this.cn = connection;
+    }
+
+    public SqlTracker() {
+    }
+
     public void init() {
         try (InputStream in = SqlTracker.class.getClassLoader().
                 getResourceAsStream("app.properties")) {
-//        try (InputStream in = new FileInputStream("app.properties")) {
             Properties config = new Properties();
             config.load(in);
             Class.forName(config.getProperty("driver-class-name"));
@@ -58,10 +64,9 @@ public class SqlTracker implements Store {
     public boolean replace(String id, Item item) {
         boolean result = false;
         try (PreparedStatement statement =
-                     cn.prepareStatement("update ? set name = ? where id = ?")) {
-            statement.setString(1, tableName);
-            statement.setString(2, item.getName());
-            statement.setInt(3, item.getId());
+                     cn.prepareStatement("update item set name = ? where id = ?")) {
+            statement.setString(1, item.getName());
+            statement.setInt(2, Integer.parseInt(id));
             result = statement.executeUpdate() > 0;
         } catch (Exception e) {
             e.printStackTrace();
@@ -155,6 +160,8 @@ public class SqlTracker implements Store {
         System.out.println("вывод id=2 " + sqlTracker.findById("2"));
         System.out.println("Вывод результатов поиска по ключу");
         sqlTracker.findByName("irs").forEach(System.out::println);
+        sqlTracker.replace("8", new Item(1, "Ten"));
+
         sqlTracker.close();
     }
 }
